@@ -13,6 +13,9 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Add MQTT dependency
+        run: idf.py add-dependency "espressif/mqtt^1.0.0"
+
       - name: Build with ESP-IDF
         uses: espressif/esp-idf-ci-action@v1
         with:
