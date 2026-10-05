@@ -19,7 +19,7 @@ jobs:
           esp_idf_version: v6.0.1
           target: esp32s3
           path: .
-          command: 'idf.py add-dependency "espressif/mqtt^1.0.0" && idf.py build'
+          command: 'idf.py add-dependency "espressif/cjson" && idf.py build'
 
       - name: Upload firmware
         uses: actions/upload-artifact@v4
