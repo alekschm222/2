@@ -1,4 +1,3 @@
-
 name: Build Xiaozhi Vietnam firmware
 
 on:
@@ -20,7 +19,7 @@ jobs:
           esp_idf_version: v5.4
           target: esp32s3
           path: .
-          command: "idf.py build"
+          command: "rm -f managed_components/espressif__esp_cam_sensor/sdkconfig.rename && idf.py build"
 
       - name: Upload firmware
         uses: actions/upload-artifact@v4
