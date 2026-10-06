@@ -50,7 +50,13 @@ jobs:
             echo "----- $f (head) -----"
             head -n 15 "$f"
           done
-
+      - name: Force remove cached esp_new_jpeg
+        run: |
+          rm -rf managed_components/espressif__esp_new_jpeg
+          rm -f dependencies.lock
+          echo "----- idf_component.yml (esp_new_jpeg line) -----"
+          grep -n "esp_new_jpeg" main/idf_component.yml || true
+          
       - name: Build with ESP-IDF
         uses: espressif/esp-idf-ci-action@v1
         with:
