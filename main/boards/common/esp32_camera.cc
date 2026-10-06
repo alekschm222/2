@@ -1,5 +1,11 @@
 #include <cstdint>
+#if __has_include("esp_jpeg_common.h")
+#include "esp_jpeg_common.h"
+#elif __has_include("esp_new_jpeg.h")
 #include "esp_new_jpeg.h"
+#elif __has_include("esp_jpeg_dec.h")
+#include "esp_jpeg_dec.h"
+#endif
 
 #ifndef ESP_NEW_JPEG_V4L2_COMPAT
 #define ESP_NEW_JPEG_V4L2_COMPAT
