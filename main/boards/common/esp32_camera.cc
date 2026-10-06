@@ -1,3 +1,15 @@
+#include <cstdint>
+#include "esp_new_jpeg.h"
+
+#ifndef ESP_NEW_JPEG_V4L2_COMPAT
+#define ESP_NEW_JPEG_V4L2_COMPAT
+#define V4L2_PIX_FMT_GREY     JPEG_PIXEL_FORMAT_GRAY
+#define V4L2_PIX_FMT_RGB565   JPEG_PIXEL_FORMAT_RGB565_LE
+#define V4L2_PIX_FMT_RGB24    JPEG_PIXEL_FORMAT_RGB888
+#define V4L2_PIX_FMT_YUYV     JPEG_PIXEL_FORMAT_YCbYCr
+#define V4L2_PIX_FMT_UYVY     JPEG_PIXEL_FORMAT_YCbYCr
+#define V4L2_PIX_FMT_YUV422P  JPEG_PIXEL_FORMAT_YCbYCr
+#endif /* ESP_NEW_JPEG_V4L2_COMPAT */
 #include "esp32_camera.h"
 #include <fcntl.h>
 #include <sys/ioctl.h>
