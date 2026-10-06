@@ -51,13 +51,13 @@ jobs:
             head -n 15 "$f"
           done
 
-      - name: Build with ESP-IDF
+            - name: Build with ESP-IDF
         uses: espressif/esp-idf-ci-action@v1
         with:
           esp_idf_version: v5.4
           target: esp32s3
           path: .
-          command: "rm -f managed_components/espressif__esp_cam_sensor/sdkconfig.rename && idf.py build"
+          command: "rm -rf build managed_components/espressif__esp_new_jpeg && rm -f dependencies.lock && rm -f managed_components/espressif__esp_cam_sensor/sdkconfig.rename && idf.py build"
 
       - name: Upload firmware
         uses: actions/upload-artifact@v4
