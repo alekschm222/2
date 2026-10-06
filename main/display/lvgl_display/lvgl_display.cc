@@ -1,10 +1,12 @@
 #include <cstdint>
+
+// Подключаем правильный заголовок esp_new_jpeg с проверкой доступных вариантов
 #if __has_include("esp_jpeg_common.h")
 #include "esp_jpeg_common.h"
-#elif __has_include("esp_new_jpeg.h")
-#include "esp_new_jpeg.h"
 #elif __has_include("esp_jpeg_dec.h")
 #include "esp_jpeg_dec.h"
+#elif __has_include("esp_new_jpeg.h")
+#include "esp_new_jpeg.h"
 #endif
 
 #ifndef ESP_NEW_JPEG_V4L2_COMPAT
@@ -16,6 +18,7 @@
 #define V4L2_PIX_FMT_UYVY     JPEG_PIXEL_FORMAT_YCbYCr
 #define V4L2_PIX_FMT_YUV422P  JPEG_PIXEL_FORMAT_YCbYCr
 #endif /* ESP_NEW_JPEG_V4L2_COMPAT */
+
 #include <esp_log.h>
 #include <esp_err.h>
 #include <string>
