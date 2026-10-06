@@ -190,6 +190,17 @@ static void InitializeGraphics(const esp_lcd_panel_handle_t panel, gfx_handle_t*
         return;
     }
 
+    gfx_core_config_t gfx_cfg = {
+        .fps = 30,
+        .task = GFX_EMOTE_INIT_CONFIG()
+    };
+
+    *engine_handle = gfx_emote_init(&gfx_cfg);
+    if (!*engine_handle) {
+        ESP_LOGE(TAG, "gfx_emote_init failed");
+        return;
+    }
+
     // 1. Инициализация ядра (без flush_cb и user_data)
     gfx_core_config_t gfx_cfg = {
         .flags = {
