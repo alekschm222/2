@@ -13,8 +13,6 @@ jobs:
         with:
           submodules: recursive
 
-      # Отключаем -Werror=format только для компонента main,
-      # чтобы сборка не падала на несоответствии %d и int32_t.
       - name: Patch main/CMakeLists.txt (-Wno-error=format)
         run: |
           if [ -f main/CMakeLists.txt ]; then
@@ -26,24 +24,29 @@ jobs:
             echo "main/CMakeLists.txt not found!" && exit 1
           fi
 
-      # Подменяем V4L2_PIX_FMT_RGB565 на старый API JPEG_PIXEL_FORMAT_RGB565,
-      # который есть в esp_new_jpeg 0.6.1 (в проекте тянется именно она).
-      - name:       - name: Patch V4L2_PIX_FMT_RGB565 alias (main + managed_components)
+      - name: Patch V4L2_PIX_FMT_RGB565 for esp_new_jpeg 0.6.x
         run: |
-          FILES=$(grep -rl "V4L2_PIX_FMT_RGB565" main/ managed_components/ 2>/dev/null || true)
+          FILES=$(grep -rl "V4L2_PIX_FMT_RGB565" main/ || true)
           if [ -z "$FILES" ]; then
             echo "No files use V4L2_PIX_FMT_RGB565, nothing to patch"
             exit 0
           fi
           for f in $FILES; do
             echo "Patching $f"
+            # 1) <cstdint> до всего остального, иначе esp_jpeg_dec.h не соберётся из C++
+            if ! grep -q '#include <cstdint>' "$f"; then
+              sed -i '1i #include <cstdint>' "$f"
+            fi
+            # 2) заголовок esp_jpeg_dec.h
             if ! grep -q 'esp_jpeg_dec.h' "$f"; then
-              sed -i '1i #include "esp_jpeg_dec.h"' "$f"
+              sed -i '2i #include "esp_jpeg_dec.h"' "$f"
             fi
+            # 3) алиас V4L2_PIX_FMT_RGB565 -> JPEG_PIXEL_FORMAT_RGB565_LE (в 0.6.x только _LE/_BE)
             if ! grep -q '#define V4L2_PIX_FMT_RGB565' "$f"; then
-              sed -i '1i #ifndef V4L2_PIX_FMT_RGB565\n#define V4L2_PIX_FMT_RGB565 JPEG_PIXEL_FORMAT_RGB565\n#endif\n' "$f"
+              sed -i '3i #ifndef V4L2_PIX_FMT_RGB565\n#define V4L2_PIX_FMT_RGB565 JPEG_PIXEL_FORMAT_RGB565_LE\n#endif\n' "$f"
             fi
-            head -n 6 "$f"
+            echo "----- $f (head) -----"
+            head -n 10 "$f"
           done
 
       - name: Build with ESP-IDF
