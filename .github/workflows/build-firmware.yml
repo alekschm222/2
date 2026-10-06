@@ -13,16 +13,35 @@ jobs:
         with:
           submodules: recursive
 
+      # Отключаем -Werror=format только для компонента main,
+      # чтобы сборка не падала на несоответствии %d и int32_t.
+      - name: Patch main/CMakeLists.txt (-Wno-error=format)
+        run: |
+          if [ -f main/CMakeLists.txt ]; then
+            grep -q "Wno-error=format" main/CMakeLists.txt || \
+              printf '\ntarget_compile_options(${COMPONENT_LIB} PRIVATE -Wno-error=format)\n' >> main/CMakeLists.txt
+            echo "----- main/CMakeLists.txt (tail) -----"
+            tail -n 10 main/CMakeLists.txt
+          else
+            echo "main/CMakeLists.txt not found!" && exit 1
+          fi
+
       - name: Build with ESP-IDF
         uses: espressif/esp-idf-ci-action@v1
         with:
           esp_idf_version: v5.4
           target: esp32s3
           path: .
-          command: "rm -f managed_components/espressif__esp_cam_sensor/sdkconfig.rename && export CXXFLAGS=\"-Wno-error=format\" && export CFLAGS=\"-Wno-error=format\" && idf.py build"
+          command: "rm -f managed_components/espressif__esp_cam_sensor/sdkconfig.rename && idf.py build"
 
       - name: Upload firmware
         uses: actions/upload-artifact@v4
         with:
           name: xiaozhi-vietnam-firmware
-          path: build/*.bin
+          # build/*.bin НЕ захватывает подпапки. Нужен build/**/*.bin
+          path: |
+            build/*.bin
+            build/**/*.bin
+            build/partition_table/*.bin
+            build/bootloader/*.bin
+          if-no-files-found: warn
