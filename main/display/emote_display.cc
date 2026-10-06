@@ -35,14 +35,12 @@ namespace emote {
 
 static const char* TAG = "EmoteDisplay";
 
-// UI Element Names
 #define UI_ELEMENT_EYE_ANIM      "eye_anim"
 #define UI_ELEMENT_TOAST_LABEL   "toast_label"
 #define UI_ELEMENT_CLOCK_LABEL   "clock_label"
 #define UI_ELEMENT_LISTEN_ANIM   "listen_anim"
 #define UI_ELEMENT_STATUS_ICON   "status_icon"
 
-// Icon Names
 #define ICON_MIC                 "icon_mic"
 #define ICON_BATTERY             "icon_Battery"
 #define ICON_SPEAKER_ZZZ         "icon_speaker_zzz"
@@ -201,30 +199,6 @@ static void InitializeGraphics(const esp_lcd_panel_handle_t panel, gfx_handle_t*
         return;
     }
 
-    // 1. Инициализация ядра (без flush_cb и user_data)
-    gfx_core_config_t gfx_cfg = {
-        .flags = {
-            .swap = true,
-            .double_buffer = true,
-            .buff_dma = true,
-        },
-        .h_res = static_cast<uint32_t>(width),
-        .v_res = static_cast<uint32_t>(height),
-        .fps = 30,
-        .task = GFX_EMOTE_INIT_CONFIG()
-    };
-    gfx_cfg.task.task_stack_caps = MALLOC_CAP_DEFAULT;
-    gfx_cfg.task.task_affinity = 0;
-    gfx_cfg.task.task_priority = 5;
-    gfx_cfg.task.task_stack = 8 * 1024;
-
-    *engine_handle = gfx_emote_init(&gfx_cfg);
-    if (!*engine_handle) {
-        ESP_LOGE(TAG, "gfx_emote_init failed");
-        return;
-    }
-
-    // 2. Добавление дисплея
     gfx_disp_config_t disp_cfg = {
         .flush_cb = EmoteEngine::OnFlush,
         .user_data = (void*)panel,
@@ -249,10 +223,6 @@ static void SetupUI(const gfx_disp_t* disp, EmoteDisplay* const display)
         ESP_LOGE(TAG, "SetupUI: invalid arguments");
         return;
     }
-
-    // В 3.x функция смены цвета фона может называться иначе,
-    // проверьте в gfx_disp.h. Если её нет, закомментируйте строку.
-    // gfx_disp_set_bg_color(disp, GFX_COLOR_HEX(0x000000));
 
     g_obj_anim_eye = gfx_anim_create((gfx_disp_t*)disp);
     gfx_obj_align(g_obj_anim_eye, GFX_ALIGN_LEFT_MID, 10, 30);
@@ -397,7 +367,7 @@ void EmoteEngine::OnFlush(gfx_disp_t* disp, const int x_start, const int y_start
 }
 
 // ============================================================================
-// EmoteDisplay Class Implementation (без изменений в API, только вызовы engine)
+// EmoteDisplay Class Implementation
 // ============================================================================
 
 EmoteDisplay::EmoteDisplay(const esp_lcd_panel_handle_t panel, const esp_lcd_panel_io_handle_t panel_io,
@@ -407,12 +377,6 @@ EmoteDisplay::EmoteDisplay(const esp_lcd_panel_handle_t panel, const esp_lcd_pan
 }
 
 EmoteDisplay::~EmoteDisplay() = default;
-
-// ... остальные методы EmoteDisplay остаются без изменений ...
-// (SetEmotion, SetChatMessage, SetStatus, ShowNotification, UpdateStatusBar,
-//  SetPowerSaveMode, SetPreviewImage, SetTheme, AddEmojiData, AddIconData,
-//  AddLayoutData, AddTextFont, GetEmojiData, GetIconData, GetEngine,
-//  GetEngineHandle, InitializeEngine, Lock, Unlock)
 
 void EmoteDisplay::SetEmotion(const char* const emotion)
 {
