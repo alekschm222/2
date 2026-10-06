@@ -24,6 +24,32 @@ jobs:
             echo "main/CMakeLists.txt not found!" && exit 1
           fi
 
+      - name: Patch V4L2_PIX_FMT_* aliases for esp_new_jpeg 1.x
+        run: |
+          FILES=$(grep -rl "V4L2_PIX_FMT_" main/ || true)
+          if [ -z "$FILES" ]; then
+            echo "No files use V4L2_PIX_FMT_*, nothing to patch"
+            exit 0
+          fi
+          for f in $FILES; do
+            echo "Patching $f"
+            if ! grep -q '#include <cstdint>' "$f"; then
+              sed -i '1i #include <cstdint>' "$f"
+            fi
+            if ! grep -q 'ESP_NEW_JPEG_V4L2_COMPAT' "$f"; then
+              sed -i '2i #ifndef ESP_NEW_JPEG_V4L2_COMPAT' "$f"
+              sed -i '3i #define ESP_NEW_JPEG_V4L2_COMPAT' "$f"
+              sed -i '4i #define V4L2_PIX_FMT_GREY     JPEG_PIXEL_FORMAT_GRAY' "$f"
+              sed -i '5i #define V4L2_PIX_FMT_RGB565   JPEG_PIXEL_FORMAT_RGB565_LE' "$f"
+              sed -i '6i #define V4L2_PIX_FMT_RGB24    JPEG_PIXEL_FORMAT_RGB888' "$f"
+              sed -i '7i #define V4L2_PIX_FMT_YUYV     JPEG_PIXEL_FORMAT_YCbYCr' "$f"
+              sed -i '8i #define V4L2_PIX_FMT_UYVY     JPEG_PIXEL_FORMAT_YCbYCr' "$f"
+              sed -i '9i #define V4L2_PIX_FMT_YUV422P  JPEG_PIXEL_FORMAT_YCbYCr' "$f"
+              sed -i '10i #endif /* ESP_NEW_JPEG_V4L2_COMPAT */' "$f"
+            fi
+            echo "----- $f (head) -----"
+            head -n 15 "$f"
+          done
 
       - name: Build with ESP-IDF
         uses: espressif/esp-idf-ci-action@v1
