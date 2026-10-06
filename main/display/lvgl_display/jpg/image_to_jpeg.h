@@ -6,7 +6,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include <linux/videodev2.h>
+// #include <linux/videodev2.h>   // удалено: Linux-заголовок, недоступен в ESP-IDF
 
 typedef uint32_t v4l2_pix_fmt_t; // see linux/videodev2.h for details
 
