@@ -28,25 +28,22 @@ jobs:
 
       # Подменяем V4L2_PIX_FMT_RGB565 на старый API JPEG_PIXEL_FORMAT_RGB565,
       # который есть в esp_new_jpeg 0.6.1 (в проекте тянется именно она).
-      - name: Patch V4L2_PIX_FMT_RGB565 alias for esp_new_jpeg
+      - name:       - name: Patch V4L2_PIX_FMT_RGB565 alias (main + managed_components)
         run: |
-          FILES=$(grep -rl "V4L2_PIX_FMT_RGB565" main/ || true)
+          FILES=$(grep -rl "V4L2_PIX_FMT_RGB565" main/ managed_components/ 2>/dev/null || true)
           if [ -z "$FILES" ]; then
             echo "No files use V4L2_PIX_FMT_RGB565, nothing to patch"
             exit 0
           fi
           for f in $FILES; do
             echo "Patching $f"
-            # 1) Подключаем заголовок esp_jpeg_dec.h, если его ещё нет
             if ! grep -q 'esp_jpeg_dec.h' "$f"; then
               sed -i '1i #include "esp_jpeg_dec.h"' "$f"
             fi
-            # 2) Определяем алиас V4L2_PIX_FMT_RGB565 -> JPEG_PIXEL_FORMAT_RGB565
             if ! grep -q '#define V4L2_PIX_FMT_RGB565' "$f"; then
               sed -i '1i #ifndef V4L2_PIX_FMT_RGB565\n#define V4L2_PIX_FMT_RGB565 JPEG_PIXEL_FORMAT_RGB565\n#endif\n' "$f"
             fi
-            echo "----- $f (head) -----"
-            head -n 12 "$f"
+            head -n 6 "$f"
           done
 
       - name: Build with ESP-IDF
