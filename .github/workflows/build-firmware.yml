@@ -24,7 +24,7 @@ jobs:
             echo "main/CMakeLists.txt not found!" && exit 1
           fi
 
-      - name:       - name: Patch V4L2_PIX_FMT_* aliases for esp_new_jpeg 0.6.x
+      - name: Patch V4L2_PIX_FMT_* aliases for esp_new_jpeg 0.6.x
         run: |
           FILES=$(grep -rl "V4L2_PIX_FMT_" main/ || true)
           if [ -z "$FILES" ]; then
