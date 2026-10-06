@@ -24,7 +24,7 @@ jobs:
             echo "main/CMakeLists.txt not found!" && exit 1
           fi
 
-      - name: Patch V4L2_PIX_FMT_* aliases for esp_new_jpeg 0.6.x
+      - name:       - name: Patch V4L2_PIX_FMT_* aliases for esp_new_jpeg 0.6.x
         run: |
           FILES=$(grep -rl "V4L2_PIX_FMT_" main/ || true)
           if [ -z "$FILES" ]; then
@@ -37,35 +37,21 @@ jobs:
             if ! grep -q '#include <cstdint>' "$f"; then
               sed -i '1i #include <cstdint>' "$f"
             fi
-            if ! grep -q 'esp_jpeg_dec.h' "$f"; then
-              sed -i '2i #include "esp_jpeg_dec.h"' "$f"
-            fi
+
             if ! grep -q 'ESP_NEW_JPEG_V4L2_COMPAT' "$f"; then
-              sed -i '3i #ifndef ESP_NEW_JPEG_V4L2_COMPAT' "$f"
-              sed -i '4i #define ESP_NEW_JPEG_V4L2_COMPAT' "$f"
-              sed -i '5i #ifndef V4L2_PIX_FMT_GREY' "$f"
-              sed -i '6i #define V4L2_PIX_FMT_GREY     JPEG_PIXEL_FORMAT_GRAY' "$f"
-              sed -i '7i #endif' "$f"
-              sed -i '8i #ifndef V4L2_PIX_FMT_RGB565' "$f"
-              sed -i '9i #define V4L2_PIX_FMT_RGB565   JPEG_PIXEL_FORMAT_RGB565_LE' "$f"
-              sed -i '10i #endif' "$f"
-              sed -i '11i #ifndef V4L2_PIX_FMT_RGB24' "$f"
-              sed -i '12i #define V4L2_PIX_FMT_RGB24    JPEG_PIXEL_FORMAT_RGB888' "$f"
-              sed -i '13i #endif' "$f"
-              sed -i '14i #ifndef V4L2_PIX_FMT_YUYV' "$f"
-              sed -i '15i #define V4L2_PIX_FMT_YUYV     JPEG_PIXEL_FORMAT_YUYV' "$f"
-              sed -i '16i #endif' "$f"
-              sed -i '17i #ifndef V4L2_PIX_FMT_UYVY' "$f"
-              sed -i '18i #define V4L2_PIX_FMT_UYVY     JPEG_PIXEL_FORMAT_UYVY' "$f"
-              sed -i '19i #endif' "$f"
-              sed -i '20i #ifndef V4L2_PIX_FMT_YUV422P' "$f"
-              sed -i '21i #define V4L2_PIX_FMT_YUV422P  JPEG_PIXEL_FORMAT_YUV422' "$f"
-              sed -i '22i #endif' "$f"
-              sed -i '23i #endif /* ESP_NEW_JPEG_V4L2_COMPAT */' "$f"
+              sed -i '2i #ifndef ESP_NEW_JPEG_V4L2_COMPAT' "$f"
+              sed -i '3i #define ESP_NEW_JPEG_V4L2_COMPAT' "$f"
+              sed -i '4i #define V4L2_PIX_FMT_GREY     JPEG_PIXEL_FORMAT_GRAY' "$f"
+              sed -i '5i #define V4L2_PIX_FMT_RGB565   JPEG_PIXEL_FORMAT_RGB565_LE' "$f"
+              sed -i '6i #define V4L2_PIX_FMT_RGB24    JPEG_PIXEL_FORMAT_RGB888' "$f"
+              sed -i '7i #define V4L2_PIX_FMT_YUYV     JPEG_PIXEL_FORMAT_YCbYCr' "$f"
+              sed -i '8i #define V4L2_PIX_FMT_UYVY     JPEG_PIXEL_FORMAT_YCbYCr' "$f"
+              sed -i '9i #define V4L2_PIX_FMT_YUV422P  JPEG_PIXEL_FORMAT_YCbYCr' "$f"
+              sed -i '10i #endif /* ESP_NEW_JPEG_V4L2_COMPAT */' "$f"
             fi
 
             echo "----- $f (head) -----"
-            head -n 25 "$f"
+            head -n 15 "$f"
           done
 
       - name: Build with ESP-IDF
