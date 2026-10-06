@@ -446,4 +446,4 @@ elseif(CONFIG_BOARD_TYPE_XINGZHI_CUBE_0_85TFT_ML307)
     set(BUILTIN_ICON_FONT font_awesome_16_4)
     set(DEFAULT_EMOJI_COLLECTION twemoji_32)
 elseif(CONFIG_BOARD_TYPE_XINGZHI_CUBE_0_96OLED_WIFI)
-    set(BOARD_TYPE "xingzhi-cube
+    set(BOARD_TYPE "xingzhi-cube-0.96oled-wifi")
